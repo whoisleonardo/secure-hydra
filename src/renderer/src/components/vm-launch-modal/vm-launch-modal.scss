@@ -1,0 +1,57 @@
+@use "../../scss/globals.scss";
+
+.vm-launch-modal {
+  display: flex;
+  flex-direction: column;
+  gap: calc(globals.$spacing-unit * 2);
+  min-width: 420px;
+
+  &__warning {
+    display: flex;
+    align-items: center;
+    gap: globals.$spacing-unit;
+    padding: calc(globals.$spacing-unit * 1.5);
+    border-radius: 8px;
+    background-color: rgba(255, 193, 7, 0.15);
+    border: 1px solid rgba(255, 193, 7, 0.4);
+    color: globals.$warning-color;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__warning-icon {
+    flex-shrink: 0;
+    fill: globals.$warning-color;
+  }
+
+  &__options {
+    display: flex;
+    gap: calc(globals.$spacing-unit * 2);
+  }
+
+  &__option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(globals.$spacing-unit / 2);
+    height: auto;
+    padding: calc(globals.$spacing-unit * 2);
+    text-align: center;
+    white-space: normal;
+
+    &--recommended {
+      position: relative;
+    }
+  }
+
+  &__option-label {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  &__option-description {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+}
