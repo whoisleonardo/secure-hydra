@@ -1,50 +1,83 @@
 <div align="center">
-
-[<img src="https://raw.githubusercontent.com/hydralauncher/hydra/refs/heads/main/resources/icon.png" width="144"/>](https://help.hydralauncher.gg)
-
-  <h1 align="center">Hydra Launcher</h1>
+  <h1 align="center">Secure Hydra</h1>
 
   <p align="center">
-    <strong>Hydra Launcher is an open-source gaming platform created to be the single tool that you need in order to manage your gaming library. Hydra is written in Node.js (Electron, React, Typescript), Python, and Rust.</strong>
+    <strong>Um fork do Hydra Launcher focado em isolamento. Downloads e execução de jogos podem rodar dentro de uma VM descartável, mantendo o sistema principal protegido de qualquer software desconhecido.</strong>
   </p>
-
-[![build](https://img.shields.io/github/actions/workflow/status/hydralauncher/hydra/build.yml)](https://github.com/hydralauncher/hydra/actions)
-[![release](https://img.shields.io/github/package-json/v/hydralauncher/hydra)](https://github.com/hydralauncher/hydra/releases)
-[![chocolatey](https://img.shields.io/chocolatey/v/hydralauncher.svg)](https://community.chocolatey.org/packages/hydralauncher)
-
-![Hydra Launcher Home Page](./docs/screenshot.png)
-
 </div>
 
-## Features
+## O que é
 
-- Add games that you own to your library
-- Have a nice profile that shows what you are playing to your friends
-- Save your game progress in the cloud with Hydra Cloud
-- Unlock achievements
-- Navigate through a rich catalogue with a powerful suggestion algorithm
-- Discover new games that you haven't played before
+Secure Hydra é um fork do [Hydra Launcher](https://github.com/hydralauncher/hydra) que adiciona uma camada de isolamento por máquina virtual. A ideia é simples: software de origem desconhecida nunca toca no seu sistema principal.
 
-## Build from source and contributing
+Toda a base do Hydra — biblioteca, downloads, interface — permanece intacta. O que muda é o momento de jogar: você escolhe onde o jogo roda.
 
-Please, refer to our Documentation pages: [docs.hydralauncher.gg](https://docs.hydralauncher.gg/getting-started)
+## Diferenciais deste fork
 
-### Local development requirements
+**Botão Jogar com escolha de ambiente.** Ao iniciar um jogo, um modal pergunta onde executá-lo:
 
-- Node.js + Yarn
-- Python 3.9+ with `pip install -r requirements.txt`
-- Rust toolchain (for `hydra-native`)
+- **Jogar na VM** — o jogo roda dentro de um ambiente isolado (Windows Sandbox ou VirtualBox). Malware fica contido, o sistema principal não é afetado.
+- **Jogar no Host** — execução direta, performance máxima. Recomendado para jogos pesados que não rodam bem virtualizados.
 
-After installing dependencies, `postinstall` now builds the Rust native addon automatically (`hydra-native/hydra-native.node`).
+**Aviso de performance.** Jogos exigentes (lançamentos recentes ou títulos AAA conhecidos) exibem um aviso sugerindo o Host, já que GPU virtualizada não dá conta de jogos de alta exigência.
 
-Packaging scripts (`yarn build:win`, `yarn build:mac`, `yarn build:linux`, `yarn build:unpack`) now run `yarn build:python-rpc` automatically.
+**Detecção automática de ambiente.** Na primeira execução, um assistente detecta o backend de VM disponível:
 
-## Contributors
+- Windows Sandbox (nativo do Windows, sem instalação) — prioridade
+- VirtualBox (fallback)
+- Opção de ativar o Windows Sandbox automaticamente se nenhum for encontrado
 
-<a href="https://github.com/hydralauncher/hydra/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=hydralauncher/hydra" />
-</a>
+**Isolamento real.** No modo VM, a pasta do jogo é montada como somente-leitura, a rede pode ser desabilitada, e o ambiente é descartado ao fechar — sem deixar rastros no host.
 
-## License
+## Como funciona o isolamento
 
-Hydra is licensed under the [MIT License](LICENSE).
+```
+Sistema principal (intocado)
+└── Backend de VM (Windows Sandbox ou VirtualBox)
+    └── Ambiente descartável
+        ├── Pasta do jogo (somente-leitura)
+        ├── Rede isolada
+        └── Jogo em execução — contido
+```
+
+Quando você fecha o jogo, o ambiente some. Para começar de novo, basta abrir outro.
+
+## Requisitos
+
+- Windows 10/11 (o isolamento por VM é específico para Windows nesta versão)
+- Windows Sandbox requer Windows 11 Pro/Enterprise/Education, ou VirtualBox instalado como alternativa
+- Virtualização (SVM/VT-x) habilitada na BIOS
+- O restante dos requisitos do Hydra Launcher original
+
+## Build
+
+Mesmo processo do Hydra original:
+
+```bash
+yarn install
+yarn dev      # desenvolvimento
+yarn build    # produção
+```
+
+## Configuração do VirtualBox (opcional)
+
+Se usar o backend VirtualBox, defina as credenciais do guest nas variáveis de ambiente em vez de usar o padrão:
+
+```bash
+VBOX_GUEST_USER=seu_usuario
+VBOX_GUEST_PASS=sua_senha
+```
+
+## Créditos
+
+Este projeto é um fork de [Hydra Launcher](https://github.com/hydralauncher/hydra), criado por **Los Broxas** e a comunidade Hydra, licenciado sob MIT. Todo o crédito pela base — biblioteca de jogos, sistema de download, interface e arquitetura — pertence aos autores originais.
+
+As modificações deste fork se limitam à camada de isolamento por VM descrita acima.
+
+## Licença
+
+MIT — veja [LICENSE](./LICENSE). O aviso de copyright original do Hydra é mantido conforme exigido pela licença.
+
+## Aviso
+
+Secure Hydra é uma ferramenta de gerenciamento e execução de jogos. O launcher em si é software livre. O conteúdo baixado através dele é de responsabilidade exclusiva de cada usuário, que deve respeitar as leis de direito autoral aplicáveis na sua jurisdição.
